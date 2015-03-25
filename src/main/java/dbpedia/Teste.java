@@ -11,18 +11,6 @@ public class Teste {
     public static void main(String args[]){
         String ENCODING = "UTF-8";
 
-        String queryString =
-                "a=" + URLEncoder.encode("Frick&Frack", ENCODING) +
-                        "&b=" + URLEncoder.encode("New York", ENCODING) +
-                        "&c=" + URLEncoder.encode("US/Eastern", ENCODING) +
-                        "&d=" + URLEncoder.encode("when?", ENCODING) +
-                        "&e=" + URLEncoder.encode("20%", ENCODING) +
-                        "&f=" + URLEncoder.encode("#1", ENCODING);
-
-        URI uri = new URI("http", null, "example.com", -1, "/accounts", queryString, null);
-
-        System.out.println(uri);
-
 
         String requisicaoQodra = HttpRequest.get("http://200.131.219.214:10035/repositories/qodra?query=select%20%3Fs%20%3Fp%20%3Fo%20%7B%3Fs%20%3Fp%20%3Fo%7D&queryLn=SPARQL&infer=false&uuid=p3d1s1xuh7y95mazl3orh&returnQueryMetadata=true")
                 .accept("application/json").body();
