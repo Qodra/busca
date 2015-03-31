@@ -27,6 +27,5 @@ public class SnifferDBPedia {
                 .accept("application/json").body();
 
         System.out.println(gsonArrayDBPedia);
-
     }
 }

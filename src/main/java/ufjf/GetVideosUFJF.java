@@ -5,10 +5,11 @@ import com.github.kevinsawicki.http.HttpRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GetVideosUFJF {
 
-    public static final void getAll()throws UnsupportedEncodingException{
+    public static final ArrayList<Triple> getAll()throws UnsupportedEncodingException{
         String textoEncode = "?a ?b ?c {?a ?b ?c}";
 
         StringBuilder requisicaoQodra = new StringBuilder();
@@ -24,13 +25,41 @@ public class GetVideosUFJF {
 
         String gsonArrayQodra = HttpRequest.get(requisicaoQodra.toString())
                 .accept("application/json").body();
+                //.accept("text/simple-csv").body();
 
         System.out.println(gsonArrayQodra);
 
         ArrayList<Triple> rdfsQodra;
 
+        //return gsonArrayQodra;
 
-       // rdfsQodra = JSONBuilder.getGson().getJSONArray.fromJson(requisicaoQodra, Tripla.class);
+        String valores[] = gsonArrayQodra.split("\"values\":");
+
+
+        valores[1] = valores[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","");
+
+        valores = valores[1].split("],");
+
+        String[] triplaRDF;
+
+        ArrayList<Triple> triplas = new ArrayList<Triple>();
+        for (String valor:valores) {
+            System.out.println(valor);
+            triplaRDF = valor.split(",");
+
+            Triple t = new Triple();
+
+            int i = 0;
+
+            t.setSujeito(triplaRDF[0]);
+            t.setPredicado(triplaRDF[1]);
+            t.setObjeto(triplaRDF[2]);
+
+            triplas.add(t);
+        }
+
+        return triplas;
+        // rdfsQodra = JSONBuilder.getGson().getJSONArray.fromJson(requisicaoQodra, Tripla.class);
 
     }
 }
