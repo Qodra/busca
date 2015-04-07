@@ -7,30 +7,73 @@ import scala.util.parsing.json.JSONArray;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class GetVideosUFJFTest {
 
     @Test
-    public void testeValores(){
+    public void getReferencesTest(){
 
-
-        ArrayList<Triple> triplas = null;
+        ArrayList<String> references = null;
         try {
-            triplas = GetVideosUFJF.getAll();
+            references = GetVideosUFJF.getRefences("http://videoaula.rnp.br/rioflashclient.php?xmlfile=//dados/conversao_html5/instituicao/ufjf/ciencias_exatas/DCC122/Aula26/video26.xml");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
-        for (Triple t: triplas) {
+        for (String s:references) {
 
-            System.out.println(t.getSujeito());
-            System.out.println(t.getPredicado());
-            System.out.println(t.getObjeto());
-
-            System.out.println("");
-
+            System.out.println(s);
 
         }
 
+    }
+
+    @Test
+    public void getTitleTest(){
+        String s = null;
+        try {
+            s = GetVideosUFJF.getTitle("http://videoaula.rnp.br/rioflashclient.php?xmlfile=//dados/conversao_html5/instituicao/ufjf/ciencias_exatas/DCC122/Aula26/video26.xml");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(s);
+    }
+
+    @Test
+    public void getCourseTest(){
+        String s = null;
+        try {
+            s = GetVideosUFJF.getCourse("http://videoaula.rnp.br/rioflashclient.php?xmlfile=//dados/conversao_html5/instituicao/ufjf/ciencias_exatas/DCC122/Aula26/video26.xml");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(s);
+    }
+
+    @Test
+    public void getKeywordsTest(){
+        ArrayList<String> s = null;
+        try {
+            s = GetVideosUFJF.getKeywords("http://videoaula.rnp.br/rioflashclient.php?xmlfile=//dados/conversao_html5/instituicao/ufjf/ciencias_exatas/DCC122/Aula26/video26.xml");
+        } catch (
+                UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(s);
+    }
+
+    @Test
+    public void getDateTest(){
+        Date d;
+        try {
+            d = GetVideosUFJF.getDate("http://videoaula.rnp.br/rioflashclient.php?xmlfile=//dados/conversao_html5/instituicao/ufjf/ciencias_exatas/DCC122/Aula26/video26.xml");
+        } catch (
+                UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 }

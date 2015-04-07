@@ -10,7 +10,7 @@ import java.io.UnsupportedEncodingException;
 public class Teste {
     public static void main(String args[]) throws UnsupportedEncodingException {
 
-        GetVideosUFJF.getAll();
+        //GetVideosUFJF.getAll();
 
         //SnifferDBPedia.getProperties("");
 

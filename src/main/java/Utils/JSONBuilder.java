@@ -11,9 +11,4 @@ public class JSONBuilder {
         return gsonBuilder.create();
     }
 
-    public static Gson getGsonArray() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-
-        return gsonBuilder.create();
-    }
 }

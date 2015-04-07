@@ -1,16 +1,22 @@
 package ufjf;
 
 import com.github.kevinsawicki.http.HttpRequest;
+import org.joda.time.DateTime;
+import scala.util.parsing.combinator.testing.Str;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class GetVideosUFJF {
 
-    public static final ArrayList<Triple> getAll()throws UnsupportedEncodingException{
-        String textoEncode = "?a ?b ?c {?a ?b ?c}";
+    private static final String requisicaoUFJF(String sujeito, String DCTERMS) throws UnsupportedEncodingException{
+
+        String textoEncode = " ?o where {<"+sujeito+"> "+DCTERMS+" ?o}";
 
         StringBuilder requisicaoQodra = new StringBuilder();
 
@@ -18,48 +24,156 @@ public class GetVideosUFJF {
 
         requisicaoQodra.append(URLEncoder.encode(textoEncode, "UTF-8"));
 
-        System.out.println(requisicaoQodra.toString());
-
-        //String gsonArrayQodra = HttpRequest.get("http://200.131.219.214:10035/repositories/qodra?query=select%20%3Fs%20%3Fp%20%3Fo%20%7B%3Fs%20%3Fp%20%3Fo%7D&queryLn=SPARQL&infer=false&uuid=p3d1s1xuh7y95mazl3orh&returnQueryMetadata=true")
-        //        .accept("application/json").body();
-
-        String gsonArrayQodra = HttpRequest.get(requisicaoQodra.toString())
+        return HttpRequest.get(requisicaoQodra.toString())
                 .accept("application/json").body();
-                //.accept("text/simple-csv").body();
+    }
 
-        System.out.println(gsonArrayQodra);
+    public static final String getTitle(String sujeito) throws UnsupportedEncodingException{
+        final String DCTERMS = "dcterms:title";
 
-        ArrayList<Triple> rdfsQodra;
+        String gsonQodra = requisicaoUFJF(sujeito, DCTERMS);
 
-        //return gsonArrayQodra;
+        String valores[] = gsonQodra.split("values\":");
+
+        return valores[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]","");
+
+    }
+
+    public static final String getCourse(String sujeito) throws UnsupportedEncodingException{
+        final String DCTERMS = "dcterms:course";
+
+        String gsonQodra = requisicaoUFJF(sujeito, DCTERMS);
+
+        String valores[] = gsonQodra.split("values\":");
+
+        return valores[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]","");
+
+    }
+
+    public static final String getAbstract(String sujeito) throws UnsupportedEncodingException{
+        final String DCTERMS = "dcterms:abstract";
+
+        String gsonQodra = requisicaoUFJF(sujeito, DCTERMS);
+
+        String valores[] = gsonQodra.split("values\":");
+
+        return valores[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]","");
+
+    }
+
+    public static final String getPublischer(String sujeito) throws UnsupportedEncodingException{
+        final String DCTERMS = "dcterms:publisher";
+
+        String gsonQodra = requisicaoUFJF(sujeito, DCTERMS);
+
+        String valores[] = gsonQodra.split("values\":");
+
+        return valores[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]","");
+
+    }
+
+    public static final String getCreator(String sujeito) throws UnsupportedEncodingException{
+        final String DCTERMS = "dcterms:creator";
+
+        String gsonQodra = requisicaoUFJF(sujeito, DCTERMS);
+
+        String valores[] = gsonQodra.split("values\":");
+
+        return valores[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]","");
+
+    }
+
+    public static final String getLicense(String sujeito) throws UnsupportedEncodingException{
+        final String DCTERMS = "dcterms:license";
+
+        String gsonQodra = requisicaoUFJF(sujeito, DCTERMS);
+
+        String valores[] = gsonQodra.split("values\":");
+
+        return valores[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]","");
+
+    }
+
+    public static final String getLanguage(String sujeito) throws UnsupportedEncodingException{
+        final String DCTERMS = "dcterms:language";
+
+        String gsonQodra = requisicaoUFJF(sujeito, DCTERMS);
+
+        String valores[] = gsonQodra.split("values\":");
+
+        return valores[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]","");
+
+    }
+
+    public static final String getEducationLevel(String sujeito) throws UnsupportedEncodingException{
+        final String DCTERMS = "dcterms:educationLevel";
+
+        String gsonQodra = requisicaoUFJF(sujeito, DCTERMS);
+
+        String valores[] = gsonQodra.split("values\":");
+
+        return valores[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]","");
+
+    }
+
+    public static final Date getDate(String sujeito) throws UnsupportedEncodingException{
+        final String DCTERMS = "dcterms:date";
+
+        String gsonQodra = requisicaoUFJF(sujeito, DCTERMS);
+
+        String valores[] = gsonQodra.split("values\":");
+
+        DateTime d = DateTime.parse(valores[1].replace("[", "").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]",""));
+
+        Calendar c = Calendar.getInstance();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(d.getYear(), d.getMonthOfYear() - 1, d.getDayOfMonth());
+        return calendar.getTime();
+    }
+
+    public static final ArrayList<String> getKeywords(String sujeito)throws UnsupportedEncodingException{
+        final String DCTERMS = "dcterms:keyword";
+
+        String gsonQodra = requisicaoUFJF(sujeito, DCTERMS);
+
+        String valores[] = gsonQodra.split("values\":");
+
+        valores[1] = valores[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]","");
+        valores = valores[1].split(",");
+
+        ArrayList<String> keyWords = new ArrayList<String>();
+
+        for (String s:valores){
+            keyWords.add(s);
+        }
+
+        return keyWords;
+    }
+
+
+    public static final ArrayList<String> getRefences(String sujeito)throws UnsupportedEncodingException{
+        final String DCTERMS = "<dcterms:references>";
+
+        String gsonArrayQodra = requisicaoUFJF(sujeito, DCTERMS);
 
         String valores[] = gsonArrayQodra.split("\"values\":");
 
-
-        valores[1] = valores[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","");
+        valores[1] = valores[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]","");
 
         valores = valores[1].split("],");
 
         String[] triplaRDF;
 
-        ArrayList<Triple> triplas = new ArrayList<Triple>();
+        ArrayList<String> references = new ArrayList<String>();
+
         for (String valor:valores) {
-            System.out.println(valor);
-            triplaRDF = valor.split(",");
-
-            Triple t = new Triple();
-
-            int i = 0;
-
-            t.setSujeito(triplaRDF[0]);
-            t.setPredicado(triplaRDF[1]);
-            t.setObjeto(triplaRDF[2]);
-
-            triplas.add(t);
+            valor = valor.replace("page","resource");
+            valor = URLDecoder.decode(valor, "UTF-8");
+            references.add(valor);
         }
 
-        return triplas;
-        // rdfsQodra = JSONBuilder.getGson().getJSONArray.fromJson(requisicaoQodra, Tripla.class);
-
+        return references;
     }
+
 }
