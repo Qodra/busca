@@ -17,23 +17,22 @@ public class DBPediaTest {
         ArrayList<String> correlatos = new ArrayList<String>();
 
         for (String s:video.getReferences()) {
-            ArrayList<String> references = DBPedia.getResource("<" + s + ">", 2);
 
-            for (String str:references){
-                correlatos.add(str);
-            }
-
+            ArrayList<String> references;
             if (DBPedia.languageIsPt(s)){
+
                 references = DBPedia.getResourceSameAs("<" + s + ">");
 
                 for (String s2:references){
-                    references = DBPedia.getResource("<" + s2 + ">", 2);
+                    System.out.println("SameAs "+s2);
+                    references = DBPedia.getResource("<" + s2 + ">", 1);
 
                     for (String str:references){
                         correlatos.add(str);
                     }
                 }
             }
+
         }
 
         /*for (String novoAssunto :correlatos){
@@ -47,7 +46,7 @@ public class DBPediaTest {
 
     @Test
     public void getPropertiesTest() throws UnsupportedEncodingException {
-        String str = DBPedia.getProperties("<http://dbpedia.org/resource/Category:Problem_solving>", "dcterms:subject");
+        String str = DBPedia.getProperties("<http://dbpedia.org/resource/Problem_solving>", "dcterms:subject");
 
         str = str.replaceAll("[\"\']","");
 
@@ -61,7 +60,7 @@ public class DBPediaTest {
 
     @Test
     public void getResourcesTest() throws UnsupportedEncodingException {
-        DBPedia.getResource("<http://dbpedia.org/resource/Heuristic>",2);
+        DBPedia.getResource("<http://dbpedia.org/resource/Heuristic>",10);
     }
 
     @Test
@@ -73,5 +72,58 @@ public class DBPediaTest {
         }
     }
 
+    @Test
+    public void getResourceByCategoryTest() {
+        ArrayList<String> resources = DBPedia.getResourcesByCategory("http://dbpedia.org/resource/Category:Problem_solving");
+
+        if (resources != null) {
+            for (String s: resources){
+                System.out.println(s);
+            }
+        }
+    }
+    @Test
+    public void getCategoryByResourceTest() {
+        ArrayList<String> categories = DBPedia.getCategoryByResource("http://dbpedia.org/resource/Problem_solving");
+
+        if (categories != null) {
+            for (String s: categories){
+                System.out.println(s);
+            }
+        }
+    }
+
+    @Test
+    public void getClassByResourceTest(){
+        ArrayList<String> classes = DBPedia.getClassByResource("http://dbpedia.org/resource/Evolutionary_algorithm");
+
+        if (classes != null){
+            for (String s: classes){
+                System.out.println(s);
+            }
+
+        }
+    }
+
+    @Test
+    public void getResourceByClassTest(){
+        ArrayList<String> resources = DBPedia.getResourcesByClass("http://dbpedia.org/class/yago/Abstraction100002137");
+
+        if (resources != null){
+            for (String s: resources){
+                System.out.println(s);
+            }
+
+        }
+    }
+
+    @Test
+    public void getResourcesRelatedTest() throws UnsupportedEncodingException {
+        Video video = Facetas.getVideo();
+        for (String s:video.getReferences()){
+            System.out.println(s);
+        }
+        //DBPedia.getResourcesRelated(video);
+    }
 }
 

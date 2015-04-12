@@ -1,6 +1,8 @@
 package dbpedia;
 
 import com.github.kevinsawicki.http.HttpRequest;
+import scala.util.parsing.combinator.testing.Str;
+import ufjf.Video;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -46,7 +48,7 @@ public class DBPedia {
 
 
     public static final ArrayList<String> getResource(String resource, int maxSubChamdas) throws UnsupportedEncodingException{
-        final String[] PROPERTIES = {"dcterms:subject", "rdf:type", "dbpedia-owl:wikiPageWikiLink"};
+        final String[] PROPERTIES = {"rdf:type"};
 
         String str = null;
 
@@ -79,26 +81,115 @@ public class DBPedia {
         return assuntosCorrelatos;
     }
 
-    public static final ArrayList<String> getResourceSameAs(String resource) throws UnsupportedEncodingException {
-        String str = null;
+    public static final ArrayList<String> getResourceSameAs(String resource) {
 
-        ArrayList<String> assuntosCorrelatos = new ArrayList<String>();
+        return dbpediaGet("distinct ?x where {<" + resource + ">  owl:sameAs ?x}");
 
-        str = getProperties(resource, "owl:sameAs");
+    }
 
-        str = str.substring(4).replaceAll("[\"\']","");
+    public static final ArrayList<String> dbpediaGet(String query){
+        StringBuilder textoEncode = new StringBuilder();
 
-        String[] resources =  str.split("\n");
+        textoEncode.append(query);
 
-        for (String s:resources) {
-            if (s.trim().isEmpty()) continue;
-            s = URLDecoder.decode(s.trim(),"UTF-8");
+        StringBuilder requisicaoDBPedia = new StringBuilder();
 
-            if (languageIsEn(s) || languageIsEs(s))
-                assuntosCorrelatos.add(s);
-
-            //System.out.println("url: "+s);
+        requisicaoDBPedia.append("http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=select+");
+        try {
+            requisicaoDBPedia.append(URLEncoder.encode(textoEncode.toString(), "UTF-8"));
         }
-        return assuntosCorrelatos;
+        catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+
+        requisicaoDBPedia.append("+LIMIT+100&timeout=30000&debug=on");
+
+        String resultado = HttpRequest.get(requisicaoDBPedia.toString())
+                .accept("text/csv").body();
+
+        resultado = resultado.substring(4).replaceAll("[\"\']", "");
+
+        String[] resources = resultado.split("\n");
+
+        ArrayList<String> related = new ArrayList<String>();
+        for (String s : resources) {
+            if (s.trim().isEmpty()) continue;
+            try {
+                s = URLDecoder.decode(s.trim(), "UTF-8");
+            }
+            catch (UnsupportedEncodingException e){
+                e.printStackTrace();
+            }
+            related.add(s);
+        }
+        return related;
+    }
+
+    public static final ArrayList<String> getResourcesByCategory(String category) {
+
+        return dbpediaGet("distinct ?x where {?x  dcterms:subject <" + category + ">}");
+
+    }
+
+    public static final ArrayList<String> getCategoryByResource(String resource){
+
+        return dbpediaGet("distinct ?x where {<" + resource + ">  dcterms:subject ?x}");
+
+    }
+
+    public static final ArrayList<String> getClassByResource(String resource){
+
+         return dbpediaGet("distinct ?x where {<" + resource + ">  rdf:type ?x}");
+
+    }
+
+    public static final ArrayList<String> getResourcesByClass(String _class) {
+
+        return dbpediaGet("distinct ?x where {?x rdf:type <" + _class + ">}");
+
+    }
+
+    public static final ArrayList<String> getResourcesRelated(Video video) {
+
+        ArrayList<String> related = new ArrayList<String>();
+
+        /**
+         * laço todas as referencias do video
+         */
+        for (String reference : video.getReferences()) {
+
+            ArrayList<String> referencesSameAs;
+            ArrayList<String> categories;
+            ArrayList<String> resources;
+
+            if (DBPedia.languageIsPt(reference)) {
+                //se esta em portugues prcura por sameAs
+                referencesSameAs = DBPedia.getResourceSameAs(reference);
+            }
+            else{
+                referencesSameAs = new ArrayList<String>();
+                referencesSameAs.add(reference);
+            }
+
+            for (String referenceSameAs : referencesSameAs) {
+
+                //para cada sameAs encontrado procura a categoria
+
+                categories = DBPedia.getCategoryByResource(referenceSameAs);
+
+                for (String category : categories) {
+
+                    //para cada categoria encontrada busca os recursos desta categoria
+
+                    resources = DBPedia.getResourcesByCategory(category);
+
+                    for (String resource: resources){
+                        related.add(resource);
+                        System.out.println(resource);
+                    }
+                }
+            }
+        }
+        return related;
     }
 }
