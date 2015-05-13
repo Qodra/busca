@@ -123,7 +123,7 @@ public class DBPediaTest {
         for (String s:video.getReferences()){
             System.out.println(s);
         }
-        //DBPedia.getResourcesRelated(video);
+        DBPedia.getResourcesRelated(video);
     }
 }
 

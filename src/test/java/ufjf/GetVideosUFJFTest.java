@@ -76,4 +76,53 @@ public class GetVideosUFJFTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void getAllIdsTest(){
+        try{
+            ArrayList<String> ids = GetVideosUFJF.getAllId();
+
+            for (String id:ids){
+                System.out.println(id);
+            }
+        }
+        catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void getIdByReferenceTest(){
+        try {
+            ArrayList<String> ids = GetVideosUFJF.getIdByReference("http://pt.dbpedia.org/resource/Teoria_dos_grafos");
+
+            for (String id:ids){
+                System.out.println(id);
+            }
+        }
+        catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void getIdByReferencesTest(){
+        try {
+            //Recupera todos os ids de videos
+            ArrayList<String> idVideos = GetVideosUFJF.getAllId();
+
+            //para cada id de video procura os videos que tem algum recurso semelhante
+            for (String idVideo:idVideos){
+                ArrayList<String> idVideosRelacionados = GetVideosUFJF.getIdByReference(idVideo);
+
+                for (String id:idVideosRelacionados){
+                    System.out.println(id);
+                }
+            }
+        }
+        catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+    }
 }

@@ -153,7 +153,7 @@ public class GetVideosUFJF {
 
 
     public static final ArrayList<String> getRefences(String sujeito)throws UnsupportedEncodingException{
-        final String DCTERMS = "<dcterms:references>";
+        final String DCTERMS = "dcterms:references";
 
         String gsonArrayQodra = requisicaoUFJF(sujeito, DCTERMS);
 
@@ -176,4 +176,77 @@ public class GetVideosUFJF {
         return references;
     }
 
-}
+    public static final ArrayList<String> getAllId() throws UnsupportedEncodingException {
+
+        String textoEncode = " distinct ?s {?s dcterms:title ?o}";
+
+        StringBuilder requisicaoQodra = new StringBuilder();
+
+        requisicaoQodra.append("http://200.131.219.214:10035/repositories/qodra?query=select");
+
+        requisicaoQodra.append(URLEncoder.encode(textoEncode, "UTF-8"));
+
+        String gsonArrayQodra = HttpRequest.get(requisicaoQodra.toString())
+                .accept("application/json").body();
+
+        String retorno[] = gsonArrayQodra.split("\"values\":");
+
+        retorno[1] = retorno[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]","");
+
+        retorno = retorno[1].split("],");
+
+        ArrayList<String> ids = new ArrayList<String>();
+
+        for (String ret:retorno) {
+            ids.add(ret);
+        }
+
+        return ids;
+    }
+
+    public static final ArrayList<String> getIdByReference(String reference) throws UnsupportedEncodingException{
+        String textoEncode = " ?s where{?s dcterms:references <"+reference+">}";
+
+        StringBuilder requisicaoQodra = new StringBuilder();
+
+        requisicaoQodra.append("http://200.131.219.214:10035/repositories/qodra?query=select");
+
+        requisicaoQodra.append(URLEncoder.encode(textoEncode, "UTF-8"));
+
+        String gsonArrayQodra = HttpRequest.get(requisicaoQodra.toString())
+                .accept("application/json").body();
+
+        String retorno[] = gsonArrayQodra.split("\"values\":");
+
+        retorno[1] = retorno[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]","");
+
+        retorno = retorno[1].split("],");
+
+
+        ArrayList<String> ids = new ArrayList<String>();
+
+        for (String ret:retorno) {
+
+            if (! "]".equals(ret))
+                ids.add(ret);
+        }
+
+        return ids;
+    }
+
+    public static final ArrayList<String> getIdByReference(ArrayList<String> references) throws UnsupportedEncodingException {
+        ArrayList<String> ids = new ArrayList<String>();
+
+
+        for (String reference:references){
+            ArrayList<String> retorno = getIdByReference(reference);
+
+            for (String ret:retorno) {
+                ids.add(ret);
+            }
+        }
+
+        return ids;
+    }
+
+    }

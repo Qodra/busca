@@ -27,6 +27,7 @@
         <google.guava>18.0</google.guava>
         <property-binder>4.0</property-binder>
         <dropbox.version>[1.7,1.8)</dropbox.version>
+        <java.compiler.version>1.7</java.compiler.version>
     </properties>
 
     <dependencies>
@@ -92,7 +93,38 @@
             <version>1.7.10</version>
         </dependency>
 
-    </dependencies>
+        <dependency>
+            <groupId>com.franz</groupId>
+            <artifactId>agraph-java-client</artifactId>
+            <version>4.1.1</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-queryparser-sparql</artifactId>
+            <version>2.8.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openrdf.sesame</groupId>
+            <artifactId>sesame-repository-api</artifactId>
+            <version>2.8.3</version>
+        </dependency>
+
+
+    </dependencies>
+    <build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>${java.compiler.version}</source>
+                <target>${java.compiler.version}</target>
+                <encoding>UTF-8</encoding>
+            </configuration>
+        </plugin>
+    </plugins>
+    </build>
 
 </project>
