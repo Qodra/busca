@@ -1,4 +1,4 @@
-package rdfstore;
+package activemq;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +19,14 @@ import com.franz.agraph.repository.AGServer;
 
 
 public class Allegro {
-    private static final String SERVER_URL = "http://200.219.214.215:10035";
+    private static final String SERVER_URL = "http://localhost:10035";
     private static final String CATALOG_ID = "";
     private static final String REPOSITORY_ID = "qodra";
     private static final String USERNAME = "super";
-    private static final String PASSWORD = "DAmgNj";
+    private static final String PASSWORD = "1234";
 
     private static List<RepositoryConnection> toClose = new ArrayList<RepositoryConnection>();
     private AGRepositoryConnection conn;
-
-
-
 
     public Allegro() throws Exception {
 
