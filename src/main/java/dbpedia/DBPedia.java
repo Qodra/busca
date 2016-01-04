@@ -1,7 +1,7 @@
 package dbpedia;
 
+import activemq.ActiveMQ;
 import com.github.kevinsawicki.http.HttpRequest;
-import scala.util.parsing.combinator.testing.Str;
 import ufjf.Video;
 
 import java.io.UnsupportedEncodingException;
@@ -83,7 +83,12 @@ public class DBPedia {
 
     public static final ArrayList<String> getResourceSameAs(String resource) {
 
-        return dbpediaGet("distinct ?x where {<" + resource + ">  owl:sameAs ?x}");
+        return dbpediaGet("distinct ?x where {?x owl:sameAs <" + resource + ">}");
+
+    }
+
+    public static final ArrayList<String> getResourceSameAsPT(String resource) {
+        return dbpediaGet("distinct ?nomePT {<" + resource + ">  owl:sameAs ?nomePT.  filter( regex(str(?nomePT), \"pt\", \"i\") )}");
 
     }
 
@@ -127,13 +132,13 @@ public class DBPedia {
 
     public static final ArrayList<String> getResourcesByCategory(String category) {
 
-        return dbpediaGet("distinct ?x where {?x  dcterms:subject <" + category + ">}");
+        return dbpediaGet("distinct ?x where {?x  dct:subject <" + category + ">}");
 
     }
 
     public static final ArrayList<String> getCategoryByResource(String resource){
 
-        return dbpediaGet("distinct ?x where {<" + resource + ">  dcterms:subject ?x}");
+        return dbpediaGet("distinct ?x where {<" + resource + ">  dct:subject ?x}");
 
     }
 
@@ -152,7 +157,6 @@ public class DBPedia {
     public static final ArrayList<String> getResourcesRelated(Video video) {
 
         ArrayList<String> related = new ArrayList<String>();
-
         /**
          * laço todas as referencias do video
          */
@@ -163,7 +167,7 @@ public class DBPedia {
             ArrayList<String> resources;
 
             if (DBPedia.languageIsPt(reference)) {
-                //se esta em portugues prcura por sameAs
+                //se esta em portugues procura por sameAs
                 referencesSameAs = DBPedia.getResourceSameAs(reference);
             }
             else{
@@ -177,19 +181,38 @@ public class DBPedia {
 
                 categories = DBPedia.getCategoryByResource(referenceSameAs);
 
+
                 for (String category : categories) {
 
-                    //para cada categoria encontrada busca os recursos desta categoria
+                    //para cada categoria encontrada, busca os recursos desta categoria
 
+
+                    related.add(category);
+                    StringBuilder buffer = new StringBuilder();
+                    buffer.append("<").append(video.getId()).append(">");
+                    buffer.append("<dcterms:category>");
+                    buffer.append("<").append(category).append(">");
+                    //System.out.println(category);
+                    new ActiveMQ().sendMessagetoRdfStore(buffer.toString());
+
+
+
+/*
                     resources = DBPedia.getResourcesByCategory(category);
 
                     for (String resource: resources){
                         related.add(resource);
+                        StringBuilder buffer = new StringBuilder();
+                        buffer.append("<").append(video.getId()).append(">");
+                        buffer.append("<dcterms:relatedto>");
+                        buffer.append("<").append(resource).append(">");
                         System.out.println(resource);
-                    }
+                        new ActiveMQ().sendMessagetoRdfStore(buffer.toString());
+                    }*/
                 }
             }
         }
+
         return related;
     }
 }

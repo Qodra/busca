@@ -32,12 +32,28 @@ public class Video {
 
     private ArrayList<String> references;
 
+    private int totalCategoriaRelacionadas;
+
+    public void setVideosRelacionados(ArrayList<String> videosRelacionados) {
+        this.videosRelacionados = videosRelacionados;
+    }
+
+    private ArrayList<String> categories;
+
+    private ArrayList<String> videosRelacionados;
+
     public Video(String id) throws UnsupportedEncodingException {
         this.id = id;
         keywords = new ArrayList<String>();
         references = new ArrayList<String>();
+        videosRelacionados = new ArrayList<>();
+        totalCategoriaRelacionadas = 0;
+
 
         setReferences(GetVideosUFJF.getRefences(id));
+
+        setCategories(GetVideosUFJF.getCategories(id));
+
         /*
         setTitle(GetVideosUFJF.getTitle(id));
 
@@ -163,6 +179,14 @@ public class Video {
         this.references = references;
     }
 
+    public ArrayList<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(ArrayList<String> categories) {
+        this.categories = categories;
+    }
+
     public void addReference(String reference){
         references.add(reference);
     }
@@ -170,4 +194,29 @@ public class Video {
     public void addKeyword(String keyword){
         keywords.add(keyword);
     }
+
+    public void addRelacionado(String idVideoRelacionado){
+        if (id.equals(idVideoRelacionado)) return;
+
+        if (!videosRelacionados.contains(idVideoRelacionado)) {
+            videosRelacionados.add(idVideoRelacionado);
+        }
+    }
+
+    public ArrayList<String> getVideosRelacionados(){
+        return videosRelacionados;
+    }
+
+    public void incTotalCategoriaRelacionadas(){
+        totalCategoriaRelacionadas++;
+    }
+
+    public void setTotalCategoriaRelacionadas(int total){
+        totalCategoriaRelacionadas = total;
+    }
+
+    public int getTotalCategoriaRelacionadas(){
+        return totalCategoriaRelacionadas;
+    }
+
 }

@@ -1,9 +1,11 @@
 package facete;
 
-import ufjf.GetVideosUFJF;
+import dbpedia.DBPedia;
+import dbpedia.DBPediaPT;
 import ufjf.Video;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 public class Facetas {
 
@@ -13,5 +15,27 @@ public class Facetas {
         return video;
     }
 
+    public ArrayList<String> building(Video v){
+        ArrayList<String> sameAS;
+        String same;
+        for (String s:v.getVideosRelacionados()){
+            sameAS = DBPedia.getResourceSameAsPT(s);
+            same = sameAS.get(0);
+        }
+        return null;
+    }
 
+    public static final ArrayList<String> getFacetas(Video video){
+
+        ArrayList<String> facetas = new ArrayList<>();
+        ArrayList<String> relacionados = video.getReferences();
+
+        for (String rel: relacionados){
+
+            facetas.addAll(DBPediaPT.getLabelPT(DBPedia.getResourceSameAsPT(rel).get(0)));
+
+        }
+
+        return facetas;
+    }
 }

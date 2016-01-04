@@ -1,7 +1,6 @@
 package dbpedia;
 
 
-import activemq.Allegro;
 import ufjf.GetVideosUFJF;
 import ufjf.Video;
 
@@ -15,7 +14,7 @@ public class Main {
 
         BufferedReader ler = new BufferedReader(new InputStreamReader(System.in));
         //String id = "0";
-        while (true) {
+        //while (true) {
             /*
             try {
                 System.out.println("Entre com id do video para fazer uma nova consulta ou digite \"0\" para sair: ");
@@ -33,25 +32,28 @@ public class Main {
             }
             */
 
-            ArrayList<String> idsVideos = GetVideosUFJF.getAllId();
+            //ArrayList<String> idsVideos = GetVideosUFJF.getAllId();
+
+            ArrayList<String> idsVideos = new ArrayList<String>();
+            idsVideos.add("http://videoaula.rnp.br/rioflashclient.php?xmlfile=//dados/conversao_html5/instituicao/ufjf/ciencias_exatas/fisica/fisica2/cap17/temperaturaecalor.xml");
 
             for(String id : idsVideos){
-                ArrayList<String> relaciondos = DBPedia.getResourcesRelated(new Video(id));
+                Video v = new Video(id);
 
-                Allegro base = new Allegro();
+               // for (String r: v.getReferences())
+                 //   System.out.println(id);
 
-                StringBuilder nt = new StringBuilder();
+                DBPedia.getResourcesRelated(v);
 
-                for (String rel:relaciondos){
-                    base.addTriple(id, "dcterms:references2", rel);
-                }
             }
 
         }
 
+    //}
+
+
+    public static void getVideoRelaciondado(){
+
     }
-
-
-
 
 }

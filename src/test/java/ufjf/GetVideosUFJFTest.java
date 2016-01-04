@@ -1,9 +1,6 @@
 package ufjf;
 
-import Utils.JSONBuilder;
-import com.google.gson.GsonBuilder;
 import org.junit.Test;
-import scala.util.parsing.json.JSONArray;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -120,6 +117,70 @@ public class GetVideosUFJFTest {
                     System.out.println(id);
                 }
             }
+        }
+        catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void getCategoriesTest(){
+        try {
+            //Recupera todos os ids de videos
+            ArrayList<String> idVideos = GetVideosUFJF.getAllId();
+
+            //para cada id de video procura os videos que tem algum recurso semelhante
+            for (String idVideo:idVideos){
+                ArrayList<String> categories = GetVideosUFJF.getCategories(idVideo);
+                System.out.println("Video: "+idVideo);
+                System.out.println("Categorias:");
+                for (String id:categories){
+                    System.out.println(id);
+                }
+            }
+        }
+        catch (UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void getVideosByCategoriesTest(){
+        try {
+            //Recupera todos os ids de videos
+            ArrayList<String> idVideos = GetVideosUFJF.getAllId();
+
+            ArrayList<Video> base = new ArrayList<>();
+
+            //para cada id de video procura os videos que tem algum recurso semelhante
+            for (String idVideo:idVideos){
+                ArrayList<String> categories = GetVideosUFJF.getCategories(idVideo);
+
+                Video video = new Video(idVideo);
+
+                for (String category:categories){
+                    ArrayList<String> videosRelacionados = GetVideosUFJF.getVideoByCategories(category);
+
+                    for (String videoRelacionado:videosRelacionados){
+                        video.addRelacionado(videoRelacionado);
+                    }
+                }
+
+                base.add(video);
+            }
+
+            for (Video video:base){
+                idVideos = video.getVideosRelacionados();
+
+                System.out.println();
+                System.out.println("video: "+video.getId());
+                int i = 1;
+                for (String id:idVideos){
+                    System.out.println("Relacionado "+i+": "+id);
+                    i++;
+                }
+            }
+
         }
         catch (UnsupportedEncodingException e){
             e.printStackTrace();

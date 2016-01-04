@@ -13,9 +13,9 @@ import javax.jms.MessageProducer;
 
 public class ActiveMQ implements ExceptionListener{
     //ActiveMQ Constants
-    private static final String AMQ_SERVER = "tcp://localhost:61616";
+    private static final String AMQ_SERVER = "tcp://200.131.219.35:61616";
     private static final String AMQ_USERNAME = "admin";
-    private static final String AMQ_PASSWORD = "1234";
+    private static final String AMQ_PASSWORD = "DAmgNj";
     private static final String FILA = "qodra.Busca.RdfStore";
 
 
@@ -48,7 +48,7 @@ public class ActiveMQ implements ExceptionListener{
             TextMessage message = session.createTextMessage(messageToSend);
 
             // Tell the producer to send the message
-            System.out.println("Sent message: "+ message.hashCode() + " : " + Thread.currentThread().getName());
+            System.out.println("Sent message: "+ messageToSend);//message.hashCode() + " : " + Thread.currentThread().getName());
             producer.send(message);
 
             // Clean up

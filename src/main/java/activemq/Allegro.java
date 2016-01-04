@@ -19,11 +19,11 @@ import com.franz.agraph.repository.AGServer;
 
 
 public class Allegro {
-    private static final String SERVER_URL = "http://localhost:10035";
+    private static final String SERVER_URL = "http://200.131.219.35:10035";
     private static final String CATALOG_ID = "";
     private static final String REPOSITORY_ID = "qodra";
     private static final String USERNAME = "super";
-    private static final String PASSWORD = "1234";
+    private static final String PASSWORD = "DAmgNj";
 
     private static List<RepositoryConnection> toClose = new ArrayList<RepositoryConnection>();
     private AGRepositoryConnection conn;
@@ -45,7 +45,7 @@ public class Allegro {
         AGRepositoryConnection conn = myRepository.getConnection();
         this.conn = conn;
         closeBeforeExit(this.conn);
-        System.out.println("Successfully connected");
+            System.out.println("Successfully connected");
     }
 
     //adiciona um statement ao repositório
@@ -73,15 +73,15 @@ public class Allegro {
 
             if (scanner.hasNext()){
                 s = scanner.next();
-                s = s.replace(">", "");
+                s = s.replace(">", "").replaceAll(" ","");
             }
             if (scanner.hasNext()){
                 p = scanner.next();
-                p = p.replace(">", "");
+                p = p.replace(">", "").replaceAll(" ","");
             }
             if (scanner.hasNext()){
                 o = scanner.next();
-                o = o.replace(">", "");
+                o = o.replace(">", "").replaceAll(" ","");
             }
             addTriple(s, p, o);
         }

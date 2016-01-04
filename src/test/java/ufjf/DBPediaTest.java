@@ -3,7 +3,6 @@ package ufjf;
 import dbpedia.DBPedia;
 import facete.Facetas;
 import org.junit.Test;
-import scala.util.parsing.combinator.testing.Str;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -64,8 +63,17 @@ public class DBPediaTest {
     }
 
     @Test
-    public void getResourcesSamenAsTest() throws UnsupportedEncodingException {
-        ArrayList<String> sameAs =  DBPedia.getResourceSameAs("<http://pt.dbpedia.org/resource/Categoria:Solução_de_problemas>");
+    public void getResourcesSameAsTest() throws UnsupportedEncodingException {
+        ArrayList<String> sameAs =  DBPedia.getResourceSameAs("http://pt.dbpedia.org/resource/Categoria:Solução_de_problemas");
+
+        for (String s:sameAs){
+            System.out.println(s);
+        }
+    }
+
+    @Test
+    public void getResourcesSamenAsPTTest() throws UnsupportedEncodingException {
+        ArrayList<String> sameAs =  DBPedia.getResourceSameAsPT("http://dbpedia.org/resource/Category:Problem_solving");
 
         for (String s:sameAs){
             System.out.println(s);
@@ -119,11 +127,14 @@ public class DBPediaTest {
 
     @Test
     public void getResourcesRelatedTest() throws UnsupportedEncodingException {
-        Video video = Facetas.getVideo();
-        for (String s:video.getReferences()){
-            System.out.println(s);
+        ArrayList<String> base = GetVideosUFJF.getAllId();
+
+        for (String b: base){
+            Video video = new Video(b);
+            System.out.println(b);
+
+            DBPedia.getResourcesRelated(video);
         }
-        DBPedia.getResourcesRelated(video);
     }
 }
 
