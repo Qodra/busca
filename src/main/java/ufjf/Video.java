@@ -1,8 +1,9 @@
 package ufjf;
 
+import org.openrdf.query.algebra.Str;
+
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 public class Video {
 
@@ -32,21 +33,24 @@ public class Video {
 
     private ArrayList<String> references;
 
+    private ArrayList<String> categories;
+
+    private ArrayList<String> videosRelacionados;
+
+    private List<Video> videosRelacionadosRank;
+
     private int totalCategoriaRelacionadas;
 
     public void setVideosRelacionados(ArrayList<String> videosRelacionados) {
         this.videosRelacionados = videosRelacionados;
     }
 
-    private ArrayList<String> categories;
-
-    private ArrayList<String> videosRelacionados;
-
     public Video(String id) throws UnsupportedEncodingException {
         this.id = id;
         keywords = new ArrayList<String>();
         references = new ArrayList<String>();
         videosRelacionados = new ArrayList<>();
+        videosRelacionadosRank = new ArrayList<Video>();
         totalCategoriaRelacionadas = 0;
 
 
@@ -200,7 +204,30 @@ public class Video {
 
         if (!videosRelacionados.contains(idVideoRelacionado)) {
             videosRelacionados.add(idVideoRelacionado);
+
+            try {
+                addVideoRelacionadoRanking(idVideoRelacionado);
+            }
+            catch (UnsupportedEncodingException E){
+                E.printStackTrace();
+            }
         }
+    }
+
+    private void addVideoRelacionadoRanking(String idVideo) throws UnsupportedEncodingException{
+        Video video = new Video(idVideo);
+
+        ArrayList<String> categoriasVideoRelacionado = video.getCategories();
+
+        ArrayList<String> categoriasVideoAtual = this.getCategories();
+
+        for (String categoria: categoriasVideoAtual){
+            if (categoriasVideoRelacionado.contains(categoria))
+                video.incTotalCategoriaRelacionadas();
+        }
+
+        videosRelacionadosRank.add(video);
+        //System.out.println("Total Categorias Relacionadas: "+video.getTotalCategoriaRelacionadas());
     }
 
     public ArrayList<String> getVideosRelacionados(){
@@ -219,4 +246,15 @@ public class Video {
         return totalCategoriaRelacionadas;
     }
 
+    public List<Video> getVideosRelacionadosRank() {
+        return videosRelacionadosRank;
+    }
+
+    public void setVideosRelacionadosRank(ArrayList<Video> videosRelacionadosRank) {
+        this.videosRelacionadosRank = videosRelacionadosRank;
+    }
+
+    public void ordenaRelacionadosPorTotalVideosRelacionados(){
+        Collections.sort(videosRelacionadosRank, new ComaparatorVideos());
+    }
 }

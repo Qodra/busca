@@ -22,18 +22,19 @@ public class Analise {
         //System.out.println("TP        \tFP        \tPrecision \tRecall    \tAcuracy   \tId Video");
         System.out.println("\\begin{table}[h]");
         System.out.println("\\centering");
-        System.out.println("\\caption{Algoritmo de Busca}");
+        System.out.println("\\caption{Abordagem Top N}");
         System.out.println("\\vspace{0.5cm}");
-        System.out.println("\\begin{tabular}{|c|c|c|c|c|c|}");
+        System.out.println("\\begin{tabular}{|c|c|c|c|c|c|c|}");
         //System.out.println("		 & \\multicolumn{2}{|c|}{$\\alpha = 0.1$}    & \\multicolumn{2}{|c|}{$\\alpha = 0.2$} & \\multicolumn{2}{|c|}{$\\alpha = 0.3$} & \\\\");
         System.out.println("\\hline");
-        System.out.println("Video	 &  TP	& FP & Precisão	& Recall & Acurácia	\\\\");
+        System.out.println("Video	 &  Esperados & Retornados Certos & Total Retornados & Precisão	& Recall & Top N	\\\\");
+        //System.out.println("Video	 &  TP	& FP & Precisão	& Recall & Acurácia	\\\\");
         System.out.println("\\hline");
 
         int i = 1;
         for (Video v: videosRelacionados){
 
-            pr.calcule(i,v);
+            pr.calcule(i,v, true);
             i++;
 
         }

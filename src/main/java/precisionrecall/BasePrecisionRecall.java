@@ -1,6 +1,7 @@
 package precisionrecall;
 
 import activemq.ActiveMQ;
+import sun.nio.cs.ext.MacThai;
 import ufjf.Video;
 
 import java.io.FileNotFoundException;
@@ -12,6 +13,9 @@ import java.util.Scanner;
 
 
 public class BasePrecisionRecall {
+
+    private static final double alfaTopN = 0.8;
+
 
     private HashMap<String, Video> videos;
 
@@ -79,7 +83,76 @@ public class BasePrecisionRecall {
         }
     }
 
-    public void calcule(int descricao, Video v){
+    public double calculeTopN(Video videoConsultado){
+
+        //verificar se o video está na base
+        Video manual = videos.get(videoConsultado.getId());
+
+        if (manual == null) {
+            // System.out.println("Não é possivel responder pois não existe referencias para este vídeo");
+            return 0d;
+        }
+
+        if (manual.getVideosRelacionados().size() == 0) return 0d; //não ha referências para este video
+
+        double denominador = 0d;
+        double numerador = 0d;
+
+        int potenciaDenominador = 1;
+        int potenciaNumerador = 1;
+
+        //ordena os videos relacionados pelo total de categorias em comun
+
+        videoConsultado.ordenaRelacionadosPorTotalVideosRelacionados();
+
+        HashMap<String, Video> videosRetornados = new HashMap();
+
+        for (Video v: videoConsultado.getVideosRelacionadosRank()){
+
+            videosRetornados.put(v.getId(),v);
+
+        }
+
+        Video videoRetornado;
+
+        for (String ref: manual.getVideosRelacionados()){
+
+            videoRetornado = videosRetornados.get(ref);
+
+            if (videoConsultado != null) {
+
+                potenciaNumerador = videoConsultado.getVideosRelacionadosRank().indexOf(videoRetornado);
+
+            }
+
+            if (potenciaNumerador > 0) {
+
+                numerador += Math.pow(alfaTopN, potenciaNumerador);
+
+            }
+
+            denominador += Math.pow(alfaTopN, potenciaDenominador++);
+
+        }
+
+        return numerador / denominador;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void calcule(int descricao, Video v, boolean topN){
         //verificar se o video está na base
         Video ref = videos.get(v.getId());
 
@@ -125,13 +198,20 @@ public class BasePrecisionRecall {
 
         //Impressão dos resultados
 
-        System.out.println("Vídeo " + descricao + "  &  " + truePositeve +" & " + ""+falsePositive +" & " + ""+precision + " & " + ""+recall + " & " + ""+acuracy+"\\\\");
+        if (! topN)
+            System.out.println("Vídeo " + descricao + "  &  " + ref.getVideosRelacionados().size() +" & " + ""+truePositeve +" & " + ""+v.getVideosRelacionados().size() +" & " + ""+format(precision) + " & " + ""+format(recall) + " & " + ""+format(acuracy)+"\\\\");
+
+        else
+            System.out.println("Vídeo " + descricao + "  &  " + ref.getVideosRelacionados().size() +" & " + ""+truePositeve +" & " + ""+v.getVideosRelacionados().size()  +" & " + ""+format(precision) + " & " + ""+format(recall) + " & " + ""+ format(calculeTopN(v))+ "\\\\");
 
         //System.out.println(rpad(""+truePositeve) +"\t" +rpad(""+falsePositive) +"\t" + rpad(""+precision) + "\t" + rpad(""+recall) + "\t" + rpad(""+acuracy)+"\t"+v.getId());
 
 
     }
 
+    public static String format(double x) {
+        return String.format("%.5f", x);
+    }
 
     private String rpad(String valor){
         /*String espacos10 = "          ";
