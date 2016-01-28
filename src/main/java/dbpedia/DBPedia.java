@@ -142,6 +142,18 @@ public class DBPedia {
 
     }
 
+    public static final ArrayList<String> getBroaderCategory(String category){
+
+        return dbpediaGet("distinct ?x where {<" + category + ">  skos:broader ?x}");
+
+    }
+
+    public static final ArrayList<String> getIsBroaderOfCategory(String category){
+
+        return dbpediaGet("distinct ?x where {?x skos:broader <" + category + ">}");
+
+    }
+
     public static final ArrayList<String> getClassByResource(String resource){
 
          return dbpediaGet("distinct ?x where {<" + resource + ">  rdf:type ?x}");
@@ -152,6 +164,19 @@ public class DBPedia {
 
         return dbpediaGet("distinct ?x where {?x rdf:type <" + _class + ">}");
 
+    }
+
+    public static final ArrayList<String> getLabelpt(String resource){
+
+        ArrayList<String> labels = dbpediaGet(" ?label WHERE { <" + resource + "> rdfs:label ?label "+
+                            "FILTER(LANG(?label) = \"\" || LANGMATCHES(LANG(?label), \"pt\"))}"
+                            );
+
+        for (String s:labels){
+            System.out.println(s);
+        }
+
+        return labels;
     }
 
     public static final ArrayList<String> getResourcesRelated(Video video) {
@@ -182,6 +207,9 @@ public class DBPedia {
                 categories = DBPedia.getCategoryByResource(referenceSameAs);
 
 
+                ArrayList<String> superCategorias = new ArrayList<>();
+                ArrayList<String> subCategorias = new ArrayList<>();
+
                 for (String category : categories) {
 
                     //para cada categoria encontrada, busca os recursos desta categoria
@@ -196,19 +224,29 @@ public class DBPedia {
                     new ActiveMQ().sendMessagetoRdfStore(buffer.toString());
 
 
+                    //superCategorias.addAll(DBPedia.getBroaderCategory(category));
+                    //subCategorias.addAll(DBPedia.getIsBroaderOfCategory(category));
 
-/*
-                    resources = DBPedia.getResourcesByCategory(category);
+                }
 
-                    for (String resource: resources){
-                        related.add(resource);
-                        StringBuilder buffer = new StringBuilder();
-                        buffer.append("<").append(video.getId()).append(">");
-                        buffer.append("<dcterms:relatedto>");
-                        buffer.append("<").append(resource).append(">");
-                        System.out.println(resource);
-                        new ActiveMQ().sendMessagetoRdfStore(buffer.toString());
-                    }*/
+                for (String category:superCategorias){
+                    related.add(category);
+                    StringBuilder buffer = new StringBuilder();
+                    buffer.append("<").append(video.getId()).append(">");
+                    buffer.append("<dcterms:category>");
+                    buffer.append("<").append(category).append(">");
+                    //System.out.println(category);
+                    new ActiveMQ().sendMessagetoRdfStore(buffer.toString());
+                }
+
+                for (String category:subCategorias){
+                    related.add(category);
+                    StringBuilder buffer = new StringBuilder();
+                    buffer.append("<").append(video.getId()).append(">");
+                    buffer.append("<dcterms:category>");
+                    buffer.append("<").append(category).append(">");
+                    //System.out.println(category);
+                    new ActiveMQ().sendMessagetoRdfStore(buffer.toString());
                 }
             }
         }

@@ -81,6 +81,26 @@ public class DBPediaTest {
     }
 
     @Test
+    public void getBroaderCategoryTest() throws UnsupportedEncodingException{
+        ArrayList<String> broaderCategories = DBPedia.getBroaderCategory("http://dbpedia.org/resource/Category:Problem_solving");
+
+        for (String s:broaderCategories) {
+
+            System.out.println(s);
+        }
+    }
+
+    @Test
+    public void getIsBroaderOfCategoryTest() throws UnsupportedEncodingException{
+        ArrayList<String> broaderCategories = DBPedia.getIsBroaderOfCategory("http://dbpedia.org/resource/Category:Problem_solving");
+
+        for (String s:broaderCategories) {
+
+            System.out.println(s);
+        }
+    }
+
+    @Test
     public void getResourceByCategoryTest() {
         ArrayList<String> resources = DBPedia.getResourcesByCategory("http://dbpedia.org/resource/Category:Problem_solving");
 
@@ -135,6 +155,16 @@ public class DBPediaTest {
 
             DBPedia.getResourcesRelated(video);
         }
+    }
+
+    @Test
+    public void getLabelspfTest() throws UnsupportedEncodingException{
+
+       // ArrayList<String> base = GetVideosUFJF.getAllId();
+
+
+        DBPedia.getLabelpt("http://dbpedia.org/resource/Algorithm");
+
     }
 }
 

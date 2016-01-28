@@ -142,16 +142,6 @@ public class BasePrecisionRecall {
 
 
 
-
-
-
-
-
-
-
-
-
-
     public void calcule(int descricao, Video v, boolean topN){
         //verificar se o video está na base
         Video ref = videos.get(v.getId());
@@ -198,13 +188,11 @@ public class BasePrecisionRecall {
 
         //Impressão dos resultados
 
-        if (! topN)
-            System.out.println("Vídeo " + descricao + "  &  " + ref.getVideosRelacionados().size() +" & " + ""+truePositeve +" & " + ""+v.getVideosRelacionados().size() +" & " + ""+format(precision) + " & " + ""+format(recall) + " & " + ""+format(acuracy)+"\\\\");
+        //System.out.println("Vídeo " + descricao + "\t"+ v.getId());
 
-        else
-            System.out.println("Vídeo " + descricao + "  &  " + ref.getVideosRelacionados().size() +" & " + ""+truePositeve +" & " + ""+v.getVideosRelacionados().size()  +" & " + ""+format(precision) + " & " + ""+format(recall) + " & " + ""+ format(calculeTopN(v))+ "\\\\");
+        System.out.println("Vídeo " + descricao + "  &  " + ref.getVideosRelacionados().size() +" & " + ""+truePositeve +" & " + ""+v.getVideosRelacionados().size()  +" & " + ""+format(precision) + " & " + ""+format(recall) + " & " + ""+ format(calculeTopN(v))+ "\\\\");
 
-        //System.out.println(rpad(""+truePositeve) +"\t" +rpad(""+falsePositive) +"\t" + rpad(""+precision) + "\t" + rpad(""+recall) + "\t" + rpad(""+acuracy)+"\t"+v.getId());
+        //System.out.println("Vídeo " + descricao+"\t"+v.getId());
 
 
     }

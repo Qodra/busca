@@ -177,7 +177,7 @@ public class GetVideosUFJF {
 
     public static final ArrayList<String> getAllId() throws UnsupportedEncodingException {
 
-        String textoEncode = " distinct ?s {?s <dcterms:title> ?o}";
+        String textoEncode = " distinct ?s {?s <dcterms:title> ?o} order by ?s";
 
         StringBuilder requisicaoQodra = new StringBuilder();
 
