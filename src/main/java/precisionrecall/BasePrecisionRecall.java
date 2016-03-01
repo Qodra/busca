@@ -1,15 +1,15 @@
 package precisionrecall;
 
 import activemq.ActiveMQ;
+import org.openrdf.query.algebra.Str;
 import sun.nio.cs.ext.MacThai;
+import ufjf.GetVideosUFJF;
 import ufjf.Video;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class BasePrecisionRecall {
@@ -23,6 +23,7 @@ public class BasePrecisionRecall {
     
     public BasePrecisionRecall(String path) throws FileNotFoundException {
             videos = new HashMap<>();
+
             Scanner scanner = new Scanner(new FileReader(path))
                     .useDelimiter("\\n");
             while (scanner.hasNext()) {
@@ -59,6 +60,32 @@ public class BasePrecisionRecall {
                 }
 
             }
+
+    }
+
+    public BasePrecisionRecall() throws UnsupportedEncodingException {
+        videos = new HashMap<>();
+        ArrayList<String> videos = GetVideosUFJF.getAllId();
+
+        ArrayList<String> relacionados;
+        for (String id: videos){
+            Video v = createVideo(id);
+
+            relacionados = GetVideosUFJF.getRelatedTo(v.getId());
+
+            for (String r:relacionados){
+                v.addRelacionado(r);
+                 ///salva os vídeos Relacionados no allegrograph
+                    StringBuilder buffer = new StringBuilder();
+                    buffer.append("<").append(v.getId()).append(">");
+                    buffer.append("<dcterms:benchmarck>");
+                    buffer.append("<").append(r.replaceAll(" ","")).append(">");
+
+                    new ActiveMQ().sendMessagetoRdfStore(buffer.toString());
+
+            }
+        }
+
     }
 
     private Video createVideo(String id){
@@ -93,7 +120,7 @@ public class BasePrecisionRecall {
             return 0d;
         }
 
-        if (manual.getVideosRelacionados().size() == 0) return 0d; //não ha referências para este video
+        if (manual.getVideosRelacionadosRank().size() == 0) return 0d; //não ha referências para este video
 
         double denominador = 0d;
         double numerador = 0d;
@@ -105,6 +132,7 @@ public class BasePrecisionRecall {
 
         videoConsultado.ordenaRelacionadosPorTotalVideosRelacionados();
 
+
         HashMap<String, Video> videosRetornados = new HashMap();
 
         for (Video v: videoConsultado.getVideosRelacionadosRank()){
@@ -115,9 +143,9 @@ public class BasePrecisionRecall {
 
         Video videoRetornado;
 
-        for (String ref: manual.getVideosRelacionados()){
+        for (Video ref: manual.getVideosRelacionadosRank()){
 
-            videoRetornado = videosRetornados.get(ref);
+            videoRetornado = videosRetornados.get(ref.getId());
 
             if (videoConsultado != null) {
 
@@ -140,9 +168,62 @@ public class BasePrecisionRecall {
 
 
 
+    public void calcule(int descricao, Video videoConsultado, boolean topN){
+        //verificar se o video está na base
+        Video ref = videos.get(videoConsultado.getId());
+
+        if (ref == null) {
+            // System.out.println("Não é possivel responder pois não existe referencias para este vídeo");
+            return;
+        }
+
+        if (ref.getVideosRelacionadosRank().size() == 0) return;
+
+        videoConsultado.poda(10,2 * ref.getVideosRelacionadosRank().size());
+
+        if (totalVideos == 0) return;
+
+        int truePositeve = 0, falsePositive = 0 , FN = 0;
+
+        List<Video> relacionados = videoConsultado.getVideosRelacionadosRank();
+
+        for (Video video: relacionados){
+
+            if (ref.containsId(video.getId())){
+                truePositeve ++;
+            }
+            else{
+                falsePositive ++;
+            }
+
+        }
+
+        //System.out.println("Video: "+v.getId());
+        //System.out.println("Total referencias: "+ref.getVideosRelacionados().size());
+        //System.out.println("Total Retornados: "+truePositeve + falsePositive);
 
 
-    public void calcule(int descricao, Video v, boolean topN){
+        int trueNegative = totalVideos - (ref.getVideosRelacionadosRank().size() + falsePositive);
+
+        float precision = 0f;
+
+        if (truePositeve + falsePositive != 0f ) ;
+        precision = (float) truePositeve / (truePositeve + falsePositive);
+
+        float recall =  (float) truePositeve / ref.getVideosRelacionadosRank().size();
+
+        float acuracy = (float) (truePositeve + trueNegative) / totalVideos;
+
+        //Impressão dos resultados
+
+
+        //System.out.println("Vídeo " + descricao + "  &  " + ref.getVideosRelacionados().size() +" & " + ""+truePositeve +" & " + ""+v.getVideosRelacionados().size()  +" & " + ""+format(precision) + " & " + ""+format(recall) + " & " + ""+ format(calculeTopN(v))+ "\\\\");
+
+        System.out.println(videoConsultado.getId() + "  \t  " +videoConsultado.getReferences().size()+ "  \t  " + ref.getVideosRelacionadosRank().size() +" \t " + ""+truePositeve +" \t " + ""+videoConsultado.getVideosRelacionadosRank().size()  +" \t " + ""+format(precision) + " \t " + ""+format(recall) + " \t " + ""+ format(calculeTopN(videoConsultado)));
+
+    }
+
+    /*public void calcule(int descricao, Video v, boolean topN){
         //verificar se o video está na base
         Video ref = videos.get(v.getId());
 
@@ -188,17 +269,15 @@ public class BasePrecisionRecall {
 
         //Impressão dos resultados
 
-        //System.out.println("Vídeo " + descricao + "\t"+ v.getId());
 
-        System.out.println("Vídeo " + descricao + "  &  " + ref.getVideosRelacionados().size() +" & " + ""+truePositeve +" & " + ""+v.getVideosRelacionados().size()  +" & " + ""+format(precision) + " & " + ""+format(recall) + " & " + ""+ format(calculeTopN(v))+ "\\\\");
+        //System.out.println("Vídeo " + descricao + "  &  " + ref.getVideosRelacionados().size() +" & " + ""+truePositeve +" & " + ""+v.getVideosRelacionados().size()  +" & " + ""+format(precision) + " & " + ""+format(recall) + " & " + ""+ format(calculeTopN(v))+ "\\\\");
 
-        //System.out.println("Vídeo " + descricao+"\t"+v.getId());
+        System.out.println(v.getId() + "  \t  " +v.getReferences().size()+ "  \t  " + ref.getVideosRelacionados().size() +" \t " + ""+truePositeve +" \t " + ""+v.getVideosRelacionados().size()  +" \t " + ""+format(precision) + " \t " + ""+format(recall) + " \t " + ""+ format(calculeTopN(v)));
 
-
-    }
+    }*/
 
     public static String format(double x) {
-        return String.format("%.5f", x);
+        return String.format("%.3f", x);
     }
 
     private String rpad(String valor){

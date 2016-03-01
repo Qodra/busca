@@ -1,7 +1,5 @@
 package ufjf;
 
-import org.openrdf.query.algebra.Str;
-
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -35,21 +33,21 @@ public class Video {
 
     private ArrayList<String> categories;
 
-    private ArrayList<String> videosRelacionados;
+    //private ArrayList<String> videosRelacionados;
 
     private List<Video> videosRelacionadosRank;
 
     private int totalCategoriaRelacionadas;
 
-    public void setVideosRelacionados(ArrayList<String> videosRelacionados) {
-        this.videosRelacionados = videosRelacionados;
-    }
+    //public void setVideosRelacionados(ArrayList<String> videosRelacionados) {
+      //  this.videosRelacionados = videosRelacionados;
+    //}
 
     public Video(String id) throws UnsupportedEncodingException {
         this.id = id;
         keywords = new ArrayList<String>();
         references = new ArrayList<String>();
-        videosRelacionados = new ArrayList<>();
+        //videosRelacionados = new ArrayList<>();
         videosRelacionadosRank = new ArrayList<Video>();
         totalCategoriaRelacionadas = 0;
 
@@ -58,9 +56,8 @@ public class Video {
 
         setCategories(GetVideosUFJF.getCategories(id));
 
-        /*
         setTitle(GetVideosUFJF.getTitle(id));
-
+/*
         setCourse(GetVideosUFJF.getCourse(id));
 
         setCreator(GetVideosUFJF.getCreator(id));
@@ -199,11 +196,24 @@ public class Video {
         keywords.add(keyword);
     }
 
+    /*
+    * String rssFeedURL = "http://stackoverflow.com";
+    this.rssFeedURLS = new ArrayList<String>();
+    this.rssFeedURLS.add(rssFeedURL);
+    if(this.rssFeedURLs.contains(rssFeedURL)) {
+        // this code will execute
+    }
+    String copyURL = new String(rssFeedURL);
+    if(this.rssFeedURLs.contains(copyURL)) {
+        // code will still execute because contains() checks equals()
+    }
+    * */
     public void addRelacionado(String idVideoRelacionado){
+
+        // não relacionar um vídeo com ele mesmo
         if (id.equals(idVideoRelacionado)) return;
 
-        if (!videosRelacionados.contains(idVideoRelacionado)) {
-            videosRelacionados.add(idVideoRelacionado);
+        if (!containsId(idVideoRelacionado)) {
 
             try {
                 addVideoRelacionadoRanking(idVideoRelacionado);
@@ -212,6 +222,13 @@ public class Video {
                 E.printStackTrace();
             }
         }
+    }
+
+    public boolean containsId(String id){
+        for (Video v: videosRelacionadosRank){
+            if (id.equals(v.getId())) return true;
+        }
+        return false;
     }
 
     private void addVideoRelacionadoRanking(String idVideo) throws UnsupportedEncodingException{
@@ -230,9 +247,9 @@ public class Video {
         //System.out.println("Total Categorias Relacionadas: "+video.getTotalCategoriaRelacionadas());
     }
 
-    public ArrayList<String> getVideosRelacionados(){
-        return videosRelacionados;
-    }
+    //public ArrayList<String> getVideosRelacionados(){
+    //    return videosRelacionados;
+   // }
 
     public void incTotalCategoriaRelacionadas(){
         totalCategoriaRelacionadas++;
@@ -255,6 +272,21 @@ public class Video {
     }
 
     public void ordenaRelacionadosPorTotalVideosRelacionados(){
-        Collections.sort(videosRelacionadosRank, new ComaparatorVideos());
+        Collections.sort(videosRelacionadosRank, new ComparatorVideosOrdemDec());
     }
+
+    public void poda(int minCategoriasRelacionadas, int maxVideos){
+        Collections.sort(videosRelacionadosRank, new ComparatorVideosOrdemAsc());
+
+        Iterator<Video> it = videosRelacionadosRank.iterator();
+
+        while (it.hasNext()){
+            if (it.next().getTotalCategoriaRelacionadas() <= minCategoriasRelacionadas){
+                if ((videosRelacionadosRank.size() > maxVideos))
+                    if (videosRelacionadosRank.size() > 10)
+                        it.remove();
+            }
+        }
+    }
+
 }

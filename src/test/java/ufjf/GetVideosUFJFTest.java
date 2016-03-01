@@ -1,6 +1,7 @@
 package ufjf;
 
 import org.junit.Test;
+import org.openrdf.query.algebra.Str;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -11,17 +12,23 @@ public class GetVideosUFJFTest {
     @Test
     public void getReferencesTest(){
 
+
         ArrayList<String> references = null;
         try {
-            references = GetVideosUFJF.getRefences("http://videoaula.rnp.br/rioflashclient.php?xmlfile=//dados/conversao_html5/instituicao/ufjf/ciencias_exatas/DCC122/Aula26/video26.xml");
+            /*ArrayList<String> videos = GetVideosUFJF.getAllId();
+            for (String v:videos){
+                references = GetVideosUFJF.getRefences(v);
+            }
+            */
+
+            references = GetVideosUFJF.getRefences("http://videoaula.rnp.br/rioflashclient.php?xmlfile=//dados/conversao_html5/instituicao/ufjf/ciencias_exatas/qui125/aula16/qui125_aula16.xml");
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
-        for (String s:references) {
-
-            System.out.println(s);
-
+        for (String ref:references){
+            System.out.println(references);
         }
 
     }
@@ -159,7 +166,7 @@ public class GetVideosUFJFTest {
                 Video video = new Video(idVideo);
 
                 for (String category:categories){
-                    ArrayList<String> videosRelacionados = GetVideosUFJF.getVideoByCategories(category);
+                    ArrayList<String> videosRelacionados = GetVideosUFJF.getVideosByCategories(category);
 
                     for (String videoRelacionado:videosRelacionados){
                         video.addRelacionado(videoRelacionado);
@@ -168,7 +175,7 @@ public class GetVideosUFJFTest {
 
                 base.add(video);
             }
-
+/*
             for (Video video:base){
                 idVideos = video.getVideosRelacionados();
 
@@ -180,10 +187,19 @@ public class GetVideosUFJFTest {
                     i++;
                 }
             }
-
+*/
         }
         catch (UnsupportedEncodingException e){
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void getRelatedToTest()throws UnsupportedEncodingException{
+        ArrayList<String> videos = GetVideosUFJF.getRelatedTo("http://videoaula.rnp.br/rioflashclient.php?xmlfile=//dados/conversao_html5/instituicao/ufjf/ciencia_da_computacao/DCC116/Aula05/Aula05.xml");
+
+        for(String v:videos){
+            System.out.println(v);
         }
     }
 }

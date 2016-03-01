@@ -12,22 +12,22 @@ public class BuscaRelacoes {
         try {
             //Recupera todos os ids de videos
             ArrayList<String> idVideos = GetVideosUFJF.getAllId();
-
+            //ArrayList<String> idVideos = new ArrayList<>();
+            //idVideos.add("http://videoaula.rnp.br/rioflashclient.php?xmlfile=//dados/conversao_html5/instituicao/ufjf/ciencia_da_computacao/DCC116/Aula05/Aula05.xml");
             ArrayList<Video> listaVideos = new ArrayList<>();
 
-
-
-            //para cada video recupera todas as suas categorias
             for (String idVideo:idVideos){
-
-
+                //para cada video recupera todas as suas categorias
                 ArrayList<String> categories = GetVideosUFJF.getCategories(idVideo);
+
+                Video video = new Video(idVideo);
+
                 if (!categories.isEmpty()) {
-                    Video video = new Video(idVideo);
+
                     //para cada categoria procura todos os videos que pertecem a ela
                     for (String category : categories) {
                        // System.out.println("Categoria: " + category);
-                        ArrayList<String> videosRelacionados = GetVideosUFJF.getVideoByCategories(category);
+                        ArrayList<String> videosRelacionados = GetVideosUFJF.getVideosByCategories(category);
 
                         for (String videoRelacionado:videosRelacionados){
 
@@ -36,6 +36,8 @@ public class BuscaRelacoes {
                     }
                     listaVideos.add(video);
                 }
+
+
             }
 
             return listaVideos;

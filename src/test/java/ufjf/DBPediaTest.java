@@ -8,40 +8,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 public class DBPediaTest {
-    @Test
-    public void dbPediaTest() throws UnsupportedEncodingException {
-
-        Video video = Facetas.getVideo();
-
-        ArrayList<String> correlatos = new ArrayList<String>();
-
-        for (String s:video.getReferences()) {
-
-            ArrayList<String> references;
-            if (DBPedia.languageIsPt(s)){
-
-                references = DBPedia.getResourceSameAs("<" + s + ">");
-
-                for (String s2:references){
-                    System.out.println("SameAs "+s2);
-                    references = DBPedia.getResource("<" + s2 + ">", 1);
-
-                    for (String str:references){
-                        correlatos.add(str);
-                    }
-                }
-            }
-
-        }
-
-        /*for (String novoAssunto :correlatos){
-            video.addReference(novoAssunto);
-        }
-        /*for (String s: video.getReferences()){
-            System.out.println(s);
-        }*/
-
-    }
 
     @Test
     public void getPropertiesTest() throws UnsupportedEncodingException {

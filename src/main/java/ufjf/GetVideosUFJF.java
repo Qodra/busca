@@ -29,7 +29,7 @@ public class GetVideosUFJF {
     }
 
     public static final String getTitle(String sujeito) throws UnsupportedEncodingException{
-        final String DCTERMS = "dcterms:title";
+        final String DCTERMS = "<dcterms:title>";
 
         String gsonQodra = requisicaoUFJF(sujeito, DCTERMS);
 
@@ -164,12 +164,14 @@ public class GetVideosUFJF {
         valores = valores[1].split("],");
 
         ArrayList<String> references = new ArrayList<String>();
-
+//System.out.println("Video "+ sujeito);
         for (String valor:valores) {
-            valor = valor.replace("page","resource");
+            //valor = valor.replace("page","resource");
             valor.replaceAll("[\\\\]", "%");
             valor = URLDecoder.decode(valor, "UTF-8");
             references.add(valor);
+
+  //          System.out.println(valor);
         }
 
         return references;
@@ -177,7 +179,7 @@ public class GetVideosUFJF {
 
     public static final ArrayList<String> getAllId() throws UnsupportedEncodingException {
 
-        String textoEncode = " distinct ?s {?s <dcterms:title> ?o} order by ?s";
+        String textoEncode = " distinct ?s {?s <dcterms:relatedto> ?o} order by ?s";
 
         StringBuilder requisicaoQodra = new StringBuilder();
 
@@ -234,9 +236,17 @@ public class GetVideosUFJF {
     }
 
     public static final ArrayList<String> getCategories(String sujeito) throws UnsupportedEncodingException{
-        final String DCTERMS = "<dcterms:category>";
 
-        String gsonArrayQodra = requisicaoUFJF(sujeito, DCTERMS);
+        String textoEncode = " ?o where {<"+sujeito+"> <dcterms:category> ?o} ";
+               // "union {<"+sujeito+"> <dcterms:referencesEn> ?o}}";
+
+        StringBuilder requisicaoQodra = new StringBuilder();
+
+        requisicaoQodra.append("http://200.131.219.35:10035/repositories/qodra?query=select");
+
+        requisicaoQodra.append(URLEncoder.encode(textoEncode, "UTF-8"));
+
+        String gsonArrayQodra = HttpRequest.get(requisicaoQodra.toString()).accept("application/json").body();
 
         String valores[] = gsonArrayQodra.split("\"values\":");
 
@@ -260,8 +270,9 @@ public class GetVideosUFJF {
         return categories;
     }
 
-    public static final ArrayList<String> getVideoByCategories(String category) throws UnsupportedEncodingException{
-        String textoEncode = " distinct ?s {?s <dcterms:category> <"+category+">}";
+    public static final ArrayList<String> getVideosByCategories(String category) throws UnsupportedEncodingException{
+        String textoEncode = " distinct ?s {?s <dcterms:category> <"+category+">} ";
+                //"union {?s <dcterms:referencesEn> <"+category+">}}";
 
         StringBuilder requisicaoQodra = new StringBuilder();
 
@@ -290,7 +301,7 @@ public class GetVideosUFJF {
         return videosdaCategoria;
     }
 
-    public static final ArrayList<String> getIdByReference(ArrayList<String> references) throws UnsupportedEncodingException {
+    public static final ArrayList<String> getVideosByReference(ArrayList<String> references) throws UnsupportedEncodingException {
         ArrayList<String> ids = new ArrayList<String>();
 
 
@@ -303,6 +314,33 @@ public class GetVideosUFJF {
         }
 
         return ids;
+    }
+
+    public static final ArrayList<String> getRelatedTo(String sujeito) throws UnsupportedEncodingException{
+        final String DCTERMS = "<dcterms:relatedto>";
+
+        String gsonQodra = requisicaoUFJF(sujeito, DCTERMS);
+
+       // String valores[] = gsonQodra.split("values\":");
+
+        String retorno[] = gsonQodra.split("\"values\":");
+
+        retorno[1] = retorno[1].replace("[","").replace("\"","").replace("<", "").replace(">","").replace("}","").replace("]]","");
+
+        retorno = retorno[1].split("],");
+
+        ArrayList<String> videosRelacionados = new ArrayList<String>();
+
+        //System.out.println("Categoria: " + category);
+        for (String ret:retorno) {
+            if ("]".equals(ret)) continue;
+            //System.out.println("Relacionado: " + ret);
+            videosRelacionados.add(ret);
+        }
+
+
+        return videosRelacionados;
+
     }
 
     }

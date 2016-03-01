@@ -14,6 +14,4 @@ public class JSONSparql {
     }
 
     private List<Triple> values;
-
-
 }

@@ -25,7 +25,7 @@ public class DBPedia {
     public static final Boolean languageIsEn(String url){
         if (url == null) return false;
 
-        return (url.startsWith("http://dbpedia") || url.startsWith("http://en"));
+        return url.startsWith("http://dbpedia");
     }
 
     public static final String getProperties(String resource, String property) throws UnsupportedEncodingException {
@@ -168,13 +168,13 @@ public class DBPedia {
 
     public static final ArrayList<String> getLabelpt(String resource){
 
-        ArrayList<String> labels = dbpediaGet(" ?label WHERE { <" + resource + "> rdfs:label ?label "+
-                            "FILTER(LANG(?label) = \"\" || LANGMATCHES(LANG(?label), \"pt\"))}"
+        ArrayList<String> labels = dbpediaGet(" ?x WHERE { <" + resource + "> rdfs:label ?x "+
+                            "FILTER(LANG(?x) = \"\" || LANGMATCHES(LANG(?x), \"pt\"))}"
                             );
 
-        for (String s:labels){
-            System.out.println(s);
-        }
+        //for (String s:labels){
+        //    System.out.println(s);
+        //}
 
         return labels;
     }
@@ -204,6 +204,13 @@ public class DBPedia {
 
                 //para cada sameAs encontrado procura a categoria
 
+                StringBuilder buffer = new StringBuilder();
+/*                buffer.append("<").append(video.getId()).append(">");
+                buffer.append("<dcterms:referencesEn>");
+                buffer.append("<").append(referenceSameAs).append(">");
+                //System.out.println(category);
+                new ActiveMQ().sendMessagetoRdfStore(buffer.toString());
+*/
                 categories = DBPedia.getCategoryByResource(referenceSameAs);
 
 
@@ -215,42 +222,45 @@ public class DBPedia {
                     //para cada categoria encontrada, busca os recursos desta categoria
 
 
-                    related.add(category);
-                    StringBuilder buffer = new StringBuilder();
+                    /*related.add(category);
+                    buffer = new StringBuilder();
                     buffer.append("<").append(video.getId()).append(">");
                     buffer.append("<dcterms:category>");
                     buffer.append("<").append(category).append(">");
                     //System.out.println(category);
                     new ActiveMQ().sendMessagetoRdfStore(buffer.toString());
+*/
 
-
-                    //superCategorias.addAll(DBPedia.getBroaderCategory(category));
+                    superCategorias.addAll(DBPedia.getBroaderCategory(category));
                     //subCategorias.addAll(DBPedia.getIsBroaderOfCategory(category));
 
                 }
 
                 for (String category:superCategorias){
                     related.add(category);
-                    StringBuilder buffer = new StringBuilder();
+                    buffer = new StringBuilder();
                     buffer.append("<").append(video.getId()).append(">");
                     buffer.append("<dcterms:category>");
                     buffer.append("<").append(category).append(">");
                     //System.out.println(category);
                     new ActiveMQ().sendMessagetoRdfStore(buffer.toString());
                 }
-
+                /*
                 for (String category:subCategorias){
                     related.add(category);
-                    StringBuilder buffer = new StringBuilder();
+                    buffer = new StringBuilder();
                     buffer.append("<").append(video.getId()).append(">");
                     buffer.append("<dcterms:category>");
                     buffer.append("<").append(category).append(">");
-                    //System.out.println(category);
+                    //System.out.println("insert data {"+buffer.toString()+"};");
                     new ActiveMQ().sendMessagetoRdfStore(buffer.toString());
                 }
+                */
             }
+
         }
 
         return related;
     }
+
 }

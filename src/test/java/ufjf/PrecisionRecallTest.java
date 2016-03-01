@@ -5,6 +5,7 @@ import precisionrecall.Analise;
 import precisionrecall.BasePrecisionRecall;
 
 import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by jayme on 04/06/15.
@@ -23,4 +24,11 @@ public class PrecisionRecallTest {
         analise.calculatePrecision();
     }
 
+    @Test
+    public void analiseTest2() throws UnsupportedEncodingException {
+
+        Analise analise = new Analise();
+
+        analise.calculatePrecision();
+    }
 }

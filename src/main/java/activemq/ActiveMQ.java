@@ -23,7 +23,7 @@ public class ActiveMQ implements ExceptionListener{
         System.out.println("JMS Exception occured.  Shutting down client.");
     }
 
-    public ActiveMQ sendMessagetoRdfStore(String messageToSend){
+    public void sendMessagetoRdfStore(String messageToSend){
 
         try {
 
@@ -37,7 +37,7 @@ public class ActiveMQ implements ExceptionListener{
             // Create a Session
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-            // Create the destination (Topic or Queue)
+            // Create the destination (Queue)
             Destination destination = session.createQueue(FILA);
 
             // Create a MessageProducer from the Session to the Topic or Queue
@@ -48,7 +48,7 @@ public class ActiveMQ implements ExceptionListener{
             TextMessage message = session.createTextMessage(messageToSend);
 
             // Tell the producer to send the message
-            System.out.println("Sent message: "+ messageToSend);//message.hashCode() + " : " + Thread.currentThread().getName());
+            //System.out.println("Sent message: "+ messageToSend); //optional
             producer.send(message);
 
             // Clean up
@@ -57,9 +57,9 @@ public class ActiveMQ implements ExceptionListener{
 
         }
         catch (Exception e) {
-            System.out.println("Caught: " + e);
             e.printStackTrace();
         }
-        return null;
     }
+
+
 }
