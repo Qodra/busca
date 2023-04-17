@@ -12,7 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>4.11</junit.version>
         <mysql.version>5.1.32</mysql.version>
-        <log4j.version>2.0.2</log4j.version>
+        <log4j.version>2.17.1</log4j.version>
         <java.compiler.version>1.7</java.compiler.version>
         <maven.compiler.plugin>3.1</maven.compiler.plugin>
         <maven.war.plugin>2.1.1</maven.war.plugin>
